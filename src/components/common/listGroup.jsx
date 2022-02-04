@@ -4,12 +4,17 @@
 /* eslint-disable no-unreachable */
 import React from "react";
 
-const ListGroup = (props) => {
-  const { items, textProperty, valueProperty, selectedItem, onItemSelect } =
-    props;
+const ListGroup = ({
+  items,
+  textProperty,
+  valueProperty,
+  selectedItem,
+  onItemSelect,
+  onClick,
+}) => {
   return (
     <nav
-      onClick={props.onClick}
+      onClick={onClick}
       style={{ cursor: "pointer" }}
       aria-label="Page navigation example"
     >

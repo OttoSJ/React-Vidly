@@ -1,20 +1,10 @@
 /* eslint-disable no-unused-vars */
-import React, { Component } from "react";
+import React from "react";
 import MoviesTable from "./moviesTable";
-import { getMovies } from "../services/services/fakeMovieService";
-import { getMovie } from "../services/services/fakeMovieService";
-import { saveMovie } from "../services/services/fakeMovieService";
-import { deleteMovie } from "../services/services/fakeMovieService";
-import { getGenres } from "../services/services/fakeGenreService";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHeart,
-  faHeartbeat,
-  faToolbox,
-} from "@fortawesome/free-solid-svg-icons";
-import { Library } from "@fortawesome/fontawesome-svg-core";
 import ListGroup from "../components/common/listGroup";
 import Pagination from "./common/pagenation";
+import { getGenres } from "../services/services/fakeGenreService";
+import { getMovies } from "../services/services/fakeMovieService";
 import { paginate } from "../utils/paginate";
 import _ from "lodash";
 
@@ -53,19 +43,11 @@ class Movie extends React.Component {
     this.setState({ selectedGenre: genre, currentPage: 1 });
   };
 
-  handleSort = (path) => {
-    const sortColumn = { ...this.state.sortColumn };
-    if (sortColumn.path === path)
-      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
-    else {
-      sortColumn.path = path;
-      sortColumn.order = "asc";
-    }
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
-  render() {
-    const { length: count } = this.state.movies;
+  getPagedData = () => {
     const {
       pageSize,
       currentPage,
@@ -73,8 +55,6 @@ class Movie extends React.Component {
       movies: allMovies,
       sortColumn,
     } = this.state;
-
-    if (count === 0) return <p>There are no movies in the database.</p>;
     const filtered =
       selectedGenre && selectedGenre._id
         ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
@@ -82,6 +62,16 @@ class Movie extends React.Component {
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
     const movies = paginate(sorted, currentPage, pageSize);
+    return { totalCount: filtered.length, data: movies };
+  };
+
+  render() {
+    const { length: count } = this.state.movies;
+    const { pageSize, currentPage, sortColumn } = this.state;
+
+    if (count === 0) return <p>There are no movies in the database.</p>;
+
+    const { totalCount, data: movies } = this.getPagedData();
 
     return (
       <div className="container ">
@@ -94,16 +84,17 @@ class Movie extends React.Component {
             />
           </div>
           <div className="col">
-            <p>Showing {filtered.length} movies in the database.</p>
+            <p>Showing {totalCount} movies in the database.</p>
             <MoviesTable
               movies={movies}
+              sortColumn={sortColumn}
               onLike={this.handleLike}
               onDelete={this.handleDelete}
               onSort={this.handleSort}
             />
 
             <Pagination
-              itemsCount={filtered.length}
+              itemsCount={totalCount}
               pageSize={pageSize}
               currentPage={currentPage}
               onPageChange={this.handlePageChange}

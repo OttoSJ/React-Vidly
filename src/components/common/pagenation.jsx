@@ -4,16 +4,19 @@ import React from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
 
-const Pagination = (props) => {
-  // eslint-disable-next-line no-unused-vars
-  const { itemsCount, pageSize, onPageChange, currentPage } = props;
-  // console.log(currentPage);
+const Pagination = ({
+  itemsCount,
+  pageSize,
+  onPageChange,
+  currentPage,
+  onClick,
+}) => {
   const pagesCount = Math.ceil(itemsCount / pageSize);
   if (pagesCount === 1) return null;
   const pages = _.range(1, pagesCount + 1);
   return (
     <nav
-      onClick={props.onClick}
+      onClick={onClick}
       style={{ cursor: "pointer" }}
       aria-label="Page navigation example"
     >
